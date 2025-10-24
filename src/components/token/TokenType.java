@@ -8,33 +8,33 @@ public enum TokenType
      *
      * ########################################
      *
-     *           VALUES FROM 0 TO 27
+     *           VALUES FROM 0 TO 40
      */
-    SEMICOLON                           (0, ";"),
-    COMA                                (1, ","),
-    IDENTIFIER                          (2, "identifier (name of functions, components.variables, etc."),
-    LINE                                (3, "line"),
-    ASSIGN                              (4, "="),
-    CONST                               (5, "constant"),
-    BREAK                               (6, "stop"),
-    PASS                                (7, "continue"),
-    RETURN                              (8, "return"),
-    IS                                  (9, "compare the objects"),
-    LEN                                 (10, "length"),
-    TYPE                                (11, "type of the identifier"),
-    DEFAULT                             (12, "default: don't recognize this"),
-    OPEN_BRACKET                        (13, "{"),
-    CLOSE_BRACKET                       (14, "}"),
-    OPEN_PARENTHESIS                    (15, "("),
-    CLOSE_PARENTHESIS                   (16, ")"),
-    OPEN_SQUARE_BRACKET                 (17, "["),
-    CLOSE_SQUARE_BRACKET                (18, "]"),
-    DOT                                 (19, "."),
-    ARROW                               (20, "->"),
-    SINGLE_QUOTE                        (21, "'"),
-    DOUBLE_QUOTE                        (22, "\""),
-    IS_STRING                           (23, "String value"),
-    IS_COMMENT                          (24, "Comment content"),
+
+    IDENTIFIER                          (0, "identifier (name of functions, components, variables, etc."),
+    LINE                                (1, "line"),
+    CONST                               (2, "constant"),
+    BREAK                               (3, "stop"),
+    PASS                                (4, "continue"),
+    RETURN                              (5, "return"),
+    IS                                  (6, "compare objects"),
+    LEN                                 (7, "length"),
+    TYPE                                (8, "type of the identifier"),
+    DEFAULT                             (9, "default: unknown token"),
+    OPEN_BRACKET                        (10, "{"),
+    CLOSE_BRACKET                       (11, "}"),
+    OPEN_PARENTHESIS                    (12, "("),
+    CLOSE_PARENTHESIS                   (13, ")"),
+    OPEN_SQUARE_BRACKET                 (14, "["),
+    CLOSE_SQUARE_BRACKET                (15, "]"),
+    DOT                                 (16, "."),
+    COLON                               (17, ":"),
+    COMA                                (18, ","),
+    SEMICOLON                           (19, ";"),
+    ASSIGN                              (20, "="),
+    ARROW                               (21, "->"),
+    SINGLE_QUOTE                        (22, "'"),
+    DOUBLE_QUOTE                        (23, "\""),
 
 
     /* ########################################
@@ -43,10 +43,11 @@ public enum TokenType
      *
      * ########################################
      *
-     *           VALUES FROM 28 TO 29
+     *           VALUES FROM 41 TO 42
      */
-    COMMENT                             (28, "--"),
-    MULTILINE_COMMENT                   (29, "---"),
+
+    COMMENT                             (41, "--"),
+    MULTILINE_COMMENT                   (42, "---"),
 
 
     /* ########################################
@@ -55,33 +56,28 @@ public enum TokenType
      *
      * ########################################
      *
-     *           VALUES FROM 30 TO 60
+     *           VALUES FROM 43 TO 60
      */
 
-    BOOL                                (30, "boolean"),
+    BOOL                                (43, "boolean"),
 
     //          INTEGERS            //
-    BYTE                                (31, "-128 to 127"),
-    SINT                                (32, "short (-32768 - 32767)"),
-    INT                                 (33, "-2,147,483,648 - 2,147,483,647"),
-    UINT                                (34, "Unsigned int 0 - 4,294,967,295"),
-    BINT                                (35, "Big-int -9,223,372,036,854,775,808 - 9,223,372,036,854,775,807"),
+    BYTE                                (44, "-128 to 127"),
+    SINT                                (45, "short (-32768 - 32767)"),
+    INT                                 (46, "-2,147,483,648 - 2,147,483,647"),
+    UINT                                (47, "Unsigned int 0 - 4,294,967,295"),
+    BINT                                (48, "Big-int -9,223,372,036,854,775,808 - 9,223,372,036,854,775,807"),
 
     //          FLOATING            //
-    FLOAT                               (40, """
-        float
-        Positive: Min = 1.4E-45,  Max = 3.4028235E38
-        Negative: -3.4028235E38 to -1.4E-45
-        """),
-    DOUBLE                              (41, "double \n Min = −1.7976931348623157×10E308  Max = " +
-                                            "1.7976931348623157×10E308"),
+    FLOAT                               (49, "float"),
+    DOUBLE                              (50, "double"),
 
     //          CHARACTERS            //
-    CHAR                                (42, "char"),
-    STR                                 (43, "string"),
+    CHAR                                (53, "char"),
+    STR                                 (54, "string"),
 
     //          OTHERS            //
-    VOID                                (60, "void"),
+    VOID                                (55, "void"),
 
 
     /* ########################################
@@ -90,7 +86,7 @@ public enum TokenType
      *
      * ########################################
      *
-     *           VALUES FROM 61 TO 85
+     *           VALUES FROM 61 TO 95
      */
 
     //          LOGIC            //
@@ -109,12 +105,16 @@ public enum TokenType
 
     //          ARITHMETIC            //
     SUM                                 (76, "+"),
-    SUB                                 (77, "-"),
-    MUL                                 (78, "*"),
-    DIV                                 (79, "/"),
-    INTEGER_DIV                         (80, "//"),
-    POW                                 (81, "**"),
-    MOD                                 (82, "%"),
+    AUTO_INCREMENT                      (77, "++"),
+    SUB                                 (78, "-"),
+    AUTO_DECREMENT                      (79, "--"),
+    ADD_ASSIGNMENT                      (80, "+="),
+    SUB_ASSIGNMENT                      (81, "-="),
+    MUL                                 (82, "*"),
+    DIV                                 (83, "/"),
+    INTEGER_DIV                         (84, "//"),
+    POW                                 (85, "**"),
+    MOD                                 (86, "%"),
 
 
     /* ########################################
@@ -123,14 +123,16 @@ public enum TokenType
      *
      * ########################################
      *
-     *           VALUES FROM 86 TO 90
+     *           VALUES FROM 96 TO 105
      */
 
-    TRUE                                (86, "ture"),
-    FALSE                               (87, "false"),
-    NULL                                (88, "null"),
-    IS_INT                              (89, "Integer value"),
-    IS_FLOAT                            (90, "Float value"),
+    TRUE                                (96, "ture"),
+    FALSE                               (97, "false"),
+    NULL                                (98, "null"),
+    IS_INT                              (99, "Integer value"),
+    IS_FLOAT                            (100, "Float value"),
+    IS_STRING                           (101, "String value"),
+    IS_COMMENT                          (102, "Comment content"),
 
 
     /* ########################################
@@ -139,20 +141,20 @@ public enum TokenType
      *
      * ########################################
      *
-     *           VALUES FROM 91 TO 105
+     *           VALUES FROM 106 TO 115
      */
 
     //          CONTROL            //
-    IF                                  (91, "if"),
-    ELIF                                (92, "elif"),
-    ELSE                                (93, "else"),
-    SW                                  (94, "switch"),
-    CASE                                (95, "case"),
+    IF                                  (106, "if"),
+    ELIF                                (107, "elif"),
+    ELSE                                (108, "else"),
+    SW                                  (109, "switch"),
+    CASE                                (110, "case"),
 
     //          LOOPS            //
-    FOR                                 (96, "for"),
-    WHILE                               (97, "while"),
-    DO_WHILE                            (98, "do while"),
+    FOR                                 (111, "for"),
+    WHILE                               (112, "while"),
+    DO_WHILE                            (113, "do while"),
 
 
     /* ########################################
