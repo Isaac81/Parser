@@ -1,6 +1,14 @@
 
-float myNumber = 5;
+float myNumber = .5;
 float myNumber = 5.5;
+myNumber -= 1;
+float number2 += 2;
+number+1
+-=
+-
+sw
+()
+{}
 
 int integer;
 uint unsignedInt = 5;

@@ -20,8 +20,8 @@ public class Main {
         int lineNumber = 0;
         boolean isString = false;
         // File
-        String sourceFileName = "src\\resources\\input\\test2.lev";
-        String lexicalFileName = "src\\resources\\output\\output.csv";
+        String sourceFileName = "src/resources/input/test2.lev";
+        String lexicalFileName = "src/resources/output/output.csv";
         File file = new File(sourceFileName);
         Scanner sc = new Scanner(file);
 

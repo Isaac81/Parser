@@ -32,3 +32,4 @@ bin/
 
 ### Files ###
 /src/resources/input/test1.lev
+/src/resources/output/output.csv
