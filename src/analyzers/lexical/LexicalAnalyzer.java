@@ -16,6 +16,7 @@ public class LexicalAnalyzer implements TokenValidator {
         add('=');
         add('*');
         add('/');
+        add('+');
         add('-');
     }};
 
@@ -79,7 +80,10 @@ public class LexicalAnalyzer implements TokenValidator {
         tokenMap.put("==", TokenType.EQUALS);
         tokenMap.put("!=", TokenType.DIFFERENT);
         tokenMap.put("+", TokenType.SUM);
+        tokenMap.put("++", TokenType.AUTO_INCREMENT);
+        tokenMap.put("+=", TokenType.ADD_ASSIGNMENT);
         tokenMap.put("-", TokenType.SUB);
+        tokenMap.put("-=", TokenType.SUB_ASSIGNMENT);
         tokenMap.put("*", TokenType.MUL);
         tokenMap.put("/", TokenType.DIV);
         tokenMap.put("//", TokenType.INTEGER_DIV);
@@ -103,7 +107,7 @@ public class LexicalAnalyzer implements TokenValidator {
 
     @Override
     public boolean isFloat(String token) {
-        return token.matches("^-?\\d*\\.\\d+$");
+        return token.matches("^-?(\\d*\\.\\d+)|(\\d+\\.\\d*)$");
     }
 
     @Override
@@ -132,9 +136,10 @@ public class LexicalAnalyzer implements TokenValidator {
                     default -> remainingData.append(currChar);
                 }
             } else if (Character.isLetterOrDigit(currChar) || currChar == '_' || currChar == '.'
-                    || (isString && (currChar != '"')))
+                    || (isString && (currChar != '"'))) {
                 auxSB.append(currChar);
-            else if (currChar == '"') {
+            } else if (currChar == '"') {
+                // Verify if the current char is the beginning or ending of a string
                 if (isString) {
                     auxSB.append(currChar);
                     tokenList.addLast(new Token(TokenType.IS_STRING, lineNumber, auxSB.toString()));
@@ -169,33 +174,36 @@ public class LexicalAnalyzer implements TokenValidator {
                 auxSB = new StringBuilder();
             }
         }
+
+        if (!auxSB.isEmpty() && isWord(auxSB.toString())) {
+            if (tokenMap.containsKey(auxSB.toString())) {
+                tokenList.addLast(new Token(tokenMap.get(auxSB.toString()), lineNumber, auxSB.toString()));
+            }
+        }
+
+        // TODO: Add else if for ident
     }
 
     private int classifier(String line, List<Token> tokenList, int lineNumber) {
         int len = line.length();
         int elements = 1;
 
-        // TODO: refactor using switch for len
-        if (len > 2) {
-            if (tokenMap.containsKey(line.substring(0, 3))) {
-                elements = 3;
-                if (isComment) {
-                    tokenList.addLast(new Token(TokenType.IS_COMMENT, lineNumber, remainingData.toString()));
-                    remainingData = new StringBuilder();
-                    isComment = false;
-                } else {
-                    isComment = true;
-                }
-            } else if (tokenMap.containsKey(line.substring(0, 2))) {
-                elements = 2;
+        // Check if the current character is the beginning or ending of ---
+        if (len > 2 && tokenMap.containsKey(line.substring(0, 3))) {
+            elements = 3;
+            if (isComment) {
+                tokenList.addLast(new Token(TokenType.IS_COMMENT, lineNumber, remainingData.toString()));
+                remainingData = new StringBuilder();
+                isComment = false;
+            } else {
+                isComment = true;
             }
-            tokenList.addLast(new Token(tokenMap.get(line.substring(0, elements)),
-                    lineNumber, line.substring(0, elements)));
-        } else if (!isComment) {
-
-        } else {
-
+        } else if (len > 1 && tokenMap.containsKey(line.substring(0, 2))) {
+            elements = 2;
         }
+        tokenList.addLast(new Token(tokenMap.get(line.substring(0, elements)),
+                lineNumber, line.substring(0, elements)));
+
         return elements - 1;
     }
 }

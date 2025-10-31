@@ -107,7 +107,7 @@ public enum TokenType
     SUM                                 (76, "+"),
     AUTO_INCREMENT                      (77, "++"),
     SUB                                 (78, "-"),
-    AUTO_DECREMENT                      (79, "--"),
+    AUTO_DECREMENT                      (79, ""),
     ADD_ASSIGNMENT                      (80, "+="),
     SUB_ASSIGNMENT                      (81, "-="),
     MUL                                 (82, "*"),
