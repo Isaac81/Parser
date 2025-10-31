@@ -7,6 +7,7 @@ import components.token.Token;
 import components.token.TokenType;
 import components.variables.Variable;
 import components.variables.numeric.FloatVariable;
+import components.variables.numeric.NumericVariable;
 
 import java.util.*;
 
@@ -25,6 +26,7 @@ public class SyntacticAnalyzer implements SyntaxValidator {
         return false;
     }
 
+
     /**
      * <p>meaning of the values of variable {@code state}</p>
      * <p>{@code 0}: float
@@ -34,44 +36,40 @@ public class SyntacticAnalyzer implements SyntaxValidator {
      * <p>{@code 4}: float identifier assign or not ;</p>
      */
     @Override
-    public boolean isValidFloatAssignation(List<Token> tokens, List<String> fileContent, int scope) {
-        boolean isValid = false;
-        int state = 0;
+    public boolean isValidFloatDeclaration(List<Token> tokens, List<String> fileContent, int scope) {
+        Token currentToken;
         FloatVariable variable = new FloatVariable(scope);
         String error;
+        int state = 0;
 
-        while (!tokens.isEmpty() && !isValid) {
-            Token currentToken = tokens.removeFirst();
-            error = "Error on line " + currentToken.getLine() + ": ".concat(fileContent.get(currentToken.getLine() - 1));
-            if (currentToken.getType() == TokenType.LINE) {
+        while (state != 4 && !(tokens.isEmpty())) {
+            currentToken = tokens.removeFirst();
+            if (currentToken.getType() == TokenType.LINE){
                 continue;
             }
-            if (currentToken.getType() == TokenType.IDENTIFIER && state == 0) {
+
+            error = "Error on line " + currentToken.getLine() + ": ".concat(fileContent.get(currentToken.getLine() - 1));
+
+            if ((state == 0) && (currentToken.getType() == TokenType.IDENTIFIER)) {
                 if (variableNames.contains(currentToken.getValue())) {
                     throw new ExistingIdentifierException(error, ExceptionMessages.EXISTING_IDENTIFIER.getDescription());
                 }
-                state = 1;
                 variable.setName(currentToken.getValue());
-            } else if (currentToken.getType() == TokenType.ASSIGN && state == 1) {
+                state = 1;
+            } else if ((state == 1) && (currentToken.getType() == TokenType.ASSIGN)) {
                 state = 2;
-            } else if (state == 2 && currentToken.getType() == TokenType.IS_FLOAT) {
-                state = 3;
-            } else if (state == 2 && currentToken.getType() != TokenType.IS_FLOAT) {
-                if (isValidNumericOperation(tokens, scope)) {
-                    state = 3;
-                } else {
-                    throw new BadAssignationException(error, ExceptionMessages.INVALID_FLOAT_VALUE.getDescription());
-                }
-
-            } else if (currentToken.getType() == TokenType.SEMICOLON &&  (state == 1 || state == 3 )) {
+            } else if (state == 1 && (currentToken.getType() == TokenType.SEMICOLON)) {
+                variables.push(variable);
                 state = 4;
-                isValid = true;
+            } else if (state == 3 && (currentToken.getType() == TokenType.SEMICOLON)) {
+                state = 4;
+            } else if ((state == 2) && isValidNumericOperation(tokens, fileContent, scope, variable)) {
+                state = 3;
+            } else {
+                throw new BadAssignationException(error, ExceptionMessages.INVALID_FLOAT_VALUE.getDescription());
             }
         }
-        variables.push(variable);
-        variableNames.add(variable.getName());
-
-        return isValid;
+        return state == 4;
     }
 
     @Override
@@ -80,7 +78,8 @@ public class SyntacticAnalyzer implements SyntaxValidator {
     }
 
     @Override
-    public boolean isValidNumericOperation(List<Token> tokens, int scope) {
+    public boolean isValidNumericOperation(List<Token> tokens, List<String> fileContent,
+                                           int scope, NumericVariable variable) {
         return false;
     }
 
@@ -107,7 +106,7 @@ public class SyntacticAnalyzer implements SyntaxValidator {
 
             switch (currentToken.getType()) {
                 case TokenType.FLOAT: {
-                    isValidFloatAssignation(tokens, fileContent, currentScope);
+                    isValidFloatDeclaration(tokens, fileContent, currentScope);
                     break;
                 }
                 case TokenType.INT: {
