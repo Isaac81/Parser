@@ -5,13 +5,13 @@ import components.variables.Variable;
 public class BooleanVariable extends Variable {
     boolean value;
 
-    public BooleanVariable(String name, int scope) {
+    public BooleanVariable(String name, String scope) {
         this.name = name;
         this.scope = scope;
         this.value = false;
     }
 
-    public BooleanVariable(String name, int scope, boolean value) {
+    public BooleanVariable(String name, String scope, boolean value) {
         this(name, scope);
         this.value = value;
     }

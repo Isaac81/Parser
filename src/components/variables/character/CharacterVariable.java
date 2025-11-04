@@ -5,12 +5,12 @@ import components.variables.Variable;
 public class CharacterVariable extends Variable {
     char value;
 
-    public CharacterVariable(String name, int scope) {
+    public CharacterVariable(String name, String scope) {
         this.name = name;
         this.scope = scope;
     }
 
-    public CharacterVariable(String name, int scope, char value) {
+    public CharacterVariable(String name, String scope, char value) {
         this(name, scope);
         this.value = value;
     }

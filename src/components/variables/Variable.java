@@ -2,7 +2,7 @@ package components.variables;
 
 public abstract class Variable {
     protected String name;
-    protected int scope;
+    protected String scope;
 
     public String getName() {
         return name;
@@ -12,11 +12,11 @@ public abstract class Variable {
         this.name = name;
     }
 
-    public int getScope() {
+    public String getScope() {
         return scope;
     }
 
-    public void setScope(int scope) {
+    public void setScope(String scope) {
         this.scope = scope;
     }
 

@@ -3,16 +3,16 @@ package components.variables.numeric;
 public class FloatVariable extends NumericVariable {
     float value;
 
-    public FloatVariable(int scope) {
+    public FloatVariable(String scope) {
         this.scope = scope;
     }
 
-    public FloatVariable(int scope, String name) {
+    public FloatVariable(String scope, String name) {
         this(scope);
         this.name = name;
     }
 
-    public FloatVariable(int scope, String name, float value) {
+    public FloatVariable(String scope, String name, float value) {
         this(scope, name);
         this.value = value;
     }

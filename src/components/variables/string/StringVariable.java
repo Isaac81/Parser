@@ -5,12 +5,12 @@ import components.variables.Variable;
 public class StringVariable extends Variable {
     String value;
 
-    public StringVariable(String name, int scope) {
+    public StringVariable(String name, String scope) {
         this.name = name;
         this.scope = scope;
     }
 
-    public StringVariable(String name, int scope, String value) {
+    public StringVariable(String name, String scope, String value) {
         this(name, scope);
         this.value = value;
     }
