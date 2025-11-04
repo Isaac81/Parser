@@ -1,6 +1,7 @@
 package components.exceptions.messages;
 
 public enum ExceptionMessages {
+    INVALID_FLOAT_DECLARATION ("Invalid float declaration."),
     INVALID_FLOAT_VALUE ("It is not a valid float value."),
     EXISTING_IDENTIFIER ("Identifier already exists.");
 

@@ -1,7 +1,9 @@
 package components.exceptions;
 
-public class ExistingIdentifierException extends RuntimeException {
-    public ExistingIdentifierException(String message, String line) {
+import components.exceptions.messages.ExceptionMessages;
+
+public class ExistingIdentifierException extends SyntaxException {
+    public ExistingIdentifierException(String message, ExceptionMessages line) {
         super(line);
         System.err.println(message);
     }
