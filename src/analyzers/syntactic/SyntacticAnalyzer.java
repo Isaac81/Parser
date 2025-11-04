@@ -1,15 +1,19 @@
 package analyzers.syntactic;
 
+import analyzers.context.SyntacticContext;
 import components.exceptions.BadAssignationException;
-import components.exceptions.messages.ExceptionMessages;
 import components.exceptions.ExistingIdentifierException;
+import components.exceptions.InvalidDeclarationException;
+import components.exceptions.messages.ExceptionMessages;
 import components.token.Token;
 import components.token.TokenType;
 import components.variables.Variable;
 import components.variables.numeric.FloatVariable;
 import components.variables.numeric.NumericVariable;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.Stack;
 
 public class SyntacticAnalyzer implements SyntaxValidator {
     private Stack<Character> groupers = new Stack<>();
@@ -17,12 +21,12 @@ public class SyntacticAnalyzer implements SyntaxValidator {
     private Set<String> variableNames = new HashSet<>();
 
     @Override
-    public boolean isValidBooleanAssignation(List<Token> tokens,  List<String> fileContent, int scope) {
+    public boolean isValidBooleanDeclaration(SyntacticContext context) {
         return false;
     }
 
     @Override
-    public boolean isValidIntegerAssignation() {
+    public boolean isValidIntegerDeclaration(SyntacticContext context) {
         return false;
     }
 
@@ -36,23 +40,24 @@ public class SyntacticAnalyzer implements SyntaxValidator {
      * <p>{@code 4}: float identifier assign or not ;</p>
      */
     @Override
-    public boolean isValidFloatDeclaration(List<Token> tokens, List<String> fileContent, int scope) {
+    public boolean isValidFloatDeclaration(SyntacticContext context) {
         Token currentToken;
-        FloatVariable variable = new FloatVariable(scope);
+        FloatVariable variable = new FloatVariable(context.getScope());
         String error;
         int state = 0;
 
-        while (state != 4 && !(tokens.isEmpty())) {
-            currentToken = tokens.removeFirst();
-            if (currentToken.getType() == TokenType.LINE){
+        while (state != 4 && !(context.getTokensList().isEmpty())) {
+            currentToken = context.getTokensList().removeFirst();
+            if (currentToken.getType() == TokenType.LINE) {
                 continue;
             }
 
-            error = "Error on line " + currentToken.getLine() + ": ".concat(fileContent.get(currentToken.getLine() - 1));
+            error = "Error on line " + currentToken.getLine() + ": "
+                    .concat(context.getFileContent().get(currentToken.getLine() - 1));
 
             if ((state == 0) && (currentToken.getType() == TokenType.IDENTIFIER)) {
                 if (variableNames.contains(currentToken.getValue())) {
-                    throw new ExistingIdentifierException(error, ExceptionMessages.EXISTING_IDENTIFIER.getDescription());
+                    throw new ExistingIdentifierException(error, ExceptionMessages.EXISTING_IDENTIFIER);
                 }
                 variable.setName(currentToken.getValue());
                 state = 1;
@@ -63,50 +68,48 @@ public class SyntacticAnalyzer implements SyntaxValidator {
                 state = 4;
             } else if (state == 3 && (currentToken.getType() == TokenType.SEMICOLON)) {
                 state = 4;
-            } else if ((state == 2) && isValidNumericOperation(tokens, fileContent, scope, variable)) {
+            } else if ((state == 2) && isValidNumericOperation(context, variable)) {
                 state = 3;
             } else {
-                throw new BadAssignationException(error, ExceptionMessages.INVALID_FLOAT_VALUE.getDescription());
+                throw new BadAssignationException(error, ExceptionMessages.INVALID_FLOAT_VALUE);
             }
         }
         return state == 4;
     }
 
     @Override
-    public boolean isValidDoubleAssignation() {
+    public boolean isValidDoubleDeclaration(SyntacticContext context) {
         return false;
     }
 
     @Override
-    public boolean isValidNumericOperation(List<Token> tokens, List<String> fileContent,
-                                           int scope, NumericVariable variable) {
+    public boolean isValidNumericOperation(SyntacticContext context, NumericVariable variable) {
         return false;
     }
 
     @Override
-    public boolean isValidCharAssignation() {
+    public boolean isValidCharDeclaration() {
         return false;
     }
 
     @Override
-    public boolean isValidStringAssignation() {
+    public boolean isValidStringDeclaration() {
         return false;
     }
 
-    public void analyzer(List<Token> tokens, List<String> fileContent) {
-        int currentScope = 0;
-        boolean isValid = true;
+    public void analyzer(SyntacticContext context) {
 
-        while (!tokens.isEmpty()) {
-            Token currentToken = tokens.removeFirst();
+        while (!context.getTokensList().isEmpty()) {
+            Token currentToken = context.getTokensList().removeFirst();
 
-            while(currentToken.getType() == TokenType.LINE) {
-                currentToken = tokens.removeFirst();
+            while (currentToken.getType() == TokenType.LINE) {
+                currentToken = context.getTokensList().removeFirst();
             }
 
             switch (currentToken.getType()) {
                 case TokenType.FLOAT: {
-                    isValidFloatDeclaration(tokens, fileContent, currentScope);
+                    isValidFloatDeclaration(context);
+                    // TODO: refactor the exceptions to use the a design pattern
                     break;
                 }
                 case TokenType.INT: {

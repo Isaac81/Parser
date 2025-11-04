@@ -1,17 +1,15 @@
 package analyzers.syntactic;
 
-import components.token.Token;
+import analyzers.context.SyntacticContext;
 import components.variables.numeric.NumericVariable;
 
-import java.util.List;
-
 public interface SyntaxValidator {
-    boolean isValidBooleanAssignation(List<Token> tokens, List<String> fileContent, int scope);
-    boolean isValidIntegerAssignation();
-    boolean isValidFloatDeclaration(List<Token> tokens, List<String> fileContent, int scope);
-    boolean isValidDoubleAssignation();
-    boolean isValidNumericOperation(List<Token> tokens, List<String> fileContent, int scope, NumericVariable variable);
-    boolean isValidCharAssignation();
-    boolean isValidStringAssignation();
+    boolean isValidBooleanDeclaration(SyntacticContext context);
+    boolean isValidIntegerDeclaration(SyntacticContext context);
+    boolean isValidFloatDeclaration(SyntacticContext context);
+    boolean isValidDoubleDeclaration(SyntacticContext context);
+    boolean isValidNumericOperation(SyntacticContext context, NumericVariable variable);
+    boolean isValidCharDeclaration();
+    boolean isValidStringDeclaration();
 
 }

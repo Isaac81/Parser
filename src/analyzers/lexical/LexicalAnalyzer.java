@@ -1,5 +1,6 @@
 package analyzers.lexical;
 
+import analyzers.context.LexicalContext;
 import components.token.Token;
 import components.token.TokenType;
 
@@ -33,7 +34,7 @@ public class LexicalAnalyzer implements TokenValidator {
         tokenMap.put("case", TokenType.CASE);
         tokenMap.put("for", TokenType.FOR);
         tokenMap.put("while", TokenType.WHILE);
-        tokenMap.put("do_while", TokenType.DO_WHILE);
+        tokenMap.put("do", TokenType.DO_WHILE);
         tokenMap.put("true", TokenType.TRUE);
         tokenMap.put("false", TokenType.FALSE);
         tokenMap.put("null", TokenType.NULL);
@@ -116,19 +117,19 @@ public class LexicalAnalyzer implements TokenValidator {
     }
 
 
-    public void analyzer(String line, List<Token> tokenList, int lineNumber, boolean isString) {
+    public void analyzer(LexicalContext context) {
         StringBuilder auxSB = new StringBuilder();
 
-        if (line.isEmpty()) {
+        if (context.getLine().isEmpty()) {
             if (isComment) {
                 remainingData.append("/n");
             } else {
-                tokenList.addLast(new Token(TokenType.LINE, lineNumber, "/n"));
+                context.getTokensList().addLast(new Token(TokenType.LINE, context.getLineNumber(), "/n"));
             }
         }
 
-        for (int i = 0; i < line.length(); i++) {
-            char currChar = line.charAt(i);
+        for (int i = 0; i < context.getLine().length(); i++) {
+            char currChar = context.getLine().charAt(i);
             if (isComment && (currChar != '-')) {
                 switch (currChar) {
                     case ',' -> remainingData.append("\\comma");
@@ -136,40 +137,50 @@ public class LexicalAnalyzer implements TokenValidator {
                     default -> remainingData.append(currChar);
                 }
             } else if (Character.isLetterOrDigit(currChar) || currChar == '_' || currChar == '.'
-                    || (isString && (currChar != '"'))) {
+                    || (context.isString() && (currChar != '"'))) {
                 auxSB.append(currChar);
             } else if (currChar == '"') {
                 // Verify if the current char is the beginning or ending of a string
-                if (isString) {
+                if (context.isString()) {
                     auxSB.append(currChar);
-                    tokenList.addLast(new Token(TokenType.IS_STRING, lineNumber, auxSB.toString()));
-                    isString = false;
+                    context.getTokensList().addLast(
+                            new Token(TokenType.IS_STRING, context.getLineNumber(), auxSB.toString()));
+                    context.setString(false);
                 } else {
                     auxSB.append(currChar);
-                    isString = true;
+                    context.setString(true);
                 }
             } else {
-                if (isWord(auxSB.toString()) && tokenMap.containsKey(auxSB.toString())) {
-                    tokenList.addLast(new Token(tokenMap.get(auxSB.toString()), lineNumber, auxSB.toString()));
-                } else if (isIdentifier(auxSB.toString())) {
-                    tokenList.addLast(new Token(TokenType.IDENTIFIER, lineNumber, auxSB.toString()));
+
+                if (isIdentifier(auxSB.toString())) {
+                    context.getTokensList().addLast(
+                            new Token(
+                                    tokenMap.getOrDefault(auxSB.toString(), TokenType.IDENTIFIER),
+                                    context.getLineNumber(),
+                                    auxSB.toString()));
                 } else if (isFloat(auxSB.toString())) {
-                    tokenList.addLast(new Token(TokenType.IS_FLOAT, lineNumber, auxSB.toString()));
+                    context.getTokensList().addLast(
+                            new Token(TokenType.IS_FLOAT, context.getLineNumber(), auxSB.toString()));
                 } else if (isInteger(auxSB.toString())) {
-                    tokenList.addLast(new Token(TokenType.IS_INT, lineNumber, auxSB.toString()));
+                    context.getTokensList().addLast(
+                            new Token(TokenType.IS_INT, context.getLineNumber(), auxSB.toString()));
                 }
 
                 if (symbolsSet.contains(currChar)) {
-                    i += classifier(line.substring(i), tokenList, lineNumber);
-                    if (tokenList.getLast().getType() == TokenType.COMMENT) {
-                        tokenList.addLast(new Token(TokenType.IS_COMMENT, lineNumber, line.substring(i + 1)));
+                    i += classifier(context.getLine().substring(i), context.getTokensList(), context.getLineNumber());
+                    if (context.getTokensList().getLast().getType() == TokenType.COMMENT) {
+                        context.getTokensList().addLast(new Token(TokenType.IS_COMMENT, context.getLineNumber(),
+                                context.getLine().substring(i + 1)));
                         break;
-                    } else if (tokenList.getLast().getType() == TokenType.SUB && isComment) {
-                        tokenList.removeLast();
+                    } else if (context.getTokensList().getLast().getType() == TokenType.SUB && isComment) {
+                        context.getTokensList().removeLast();
                     }
                 } else if (currChar != ' ') {
-                    tokenList.addLast(new Token(tokenMap.getOrDefault(Character.toString(currChar), TokenType.DEFAULT),
-                            lineNumber, Character.toString(currChar)));
+                    context.getTokensList().addLast(
+                            new Token(
+                                    tokenMap.getOrDefault(Character.toString(currChar), TokenType.DEFAULT),
+                                    context.getLineNumber(),
+                                    Character.toString(currChar)));
                 }
                 auxSB = new StringBuilder();
             }
@@ -177,13 +188,15 @@ public class LexicalAnalyzer implements TokenValidator {
 
         if (!auxSB.isEmpty() && isWord(auxSB.toString())) {
             if (tokenMap.containsKey(auxSB.toString())) {
-                tokenList.addLast(new Token(tokenMap.get(auxSB.toString()), lineNumber, auxSB.toString()));
+                context.getTokensList().addLast(
+                        new Token(tokenMap.get(auxSB.toString()), context.getLineNumber(), auxSB.toString()));
             }
         }
 
-        // TODO: Add else if for ident
+        // TODO: Add else if for identifier
     }
 
+    // TODO: replace the current params with the context
     private int classifier(String line, List<Token> tokenList, int lineNumber) {
         int len = line.length();
         int elements = 1;
