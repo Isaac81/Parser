@@ -126,7 +126,7 @@ public enum TokenType
      *           VALUES FROM 96 TO 105
      */
 
-    TRUE                                (96, "ture"),
+    TRUE                                (96, "true"),
     FALSE                               (97, "false"),
     NULL                                (98, "null"),
     IS_INT                              (99, "Integer value"),
